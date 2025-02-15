@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
+import signatureVerification from './middleware/signatureVerification'
 import zodValidation from './middleware/zodValidation'
 
 type Bindings = {
   META_APP_VERIFY_TOKEN: string
+  META_APP_SECRET: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -18,13 +20,19 @@ const MetaVerificationSchema = z.object({
   'hub.mode': z.enum(['subscribe']),
 })
 
-app.get('/meta/hub', zodValidation('param', MetaVerificationSchema), (ctx) => {
-  const v = ctx.req.valid('form')
+app.get('/meta/hub', zodValidation('query', MetaVerificationSchema), (ctx) => {
+  const v = ctx.req.valid('query')
   if (v['hub.verify_token'] === ctx.env.META_APP_VERIFY_TOKEN) {
     return ctx.text(v['hub.challenge'])
   }
 
-  return ctx.text('Not found', 404)
+  return ctx.text('Ko le werk', 400)
+})
+
+app.use(signatureVerification)
+app.post('/meta/hub', async (ctx) => {
+  console.log('req->', await ctx.req.raw.clone().json())
+  return ctx.text('ok')
 })
 
 export default app

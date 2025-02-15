@@ -5,6 +5,7 @@
     "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
+    "@types/node": "^22.13.4",
     "hono": "^4.6.20",
     "zod": "^3.24.2"
   },
