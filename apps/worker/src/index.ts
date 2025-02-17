@@ -1,4 +1,6 @@
 import { Hono } from 'hono'
+import { Buffer } from 'node:buffer'
+import { timingSafeEqual } from 'node:crypto'
 import { z } from 'zod'
 import signatureVerification from './middleware/signatureVerification'
 import zodValidation from './middleware/zodValidation'
@@ -22,9 +24,18 @@ const MetaVerificationSchema = z.object({
 
 app.get('/meta/hub', zodValidation('query', MetaVerificationSchema), (ctx) => {
   const v = ctx.req.valid('query')
-  if (v['hub.verify_token'] === ctx.env.META_APP_VERIFY_TOKEN) {
-    return ctx.text(v['hub.challenge'])
+
+  try {
+    if (
+      timingSafeEqual(
+        Buffer.from(v['hub.verify_token']),
+        Buffer.from(ctx.env.META_APP_VERIFY_TOKEN)
+      )
+    ) {
+      return ctx.text(v['hub.challenge'])
+    }
   }
+  catch {}
 
   return ctx.text('Ko le werk', 400)
 })
