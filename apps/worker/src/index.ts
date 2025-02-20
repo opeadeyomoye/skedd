@@ -18,7 +18,7 @@ app.get('/', (c) => {
 
 const MetaVerificationSchema = z.object({
   'hub.verify_token': z.string().min(160).max(192),
-  'hub.challenge': z.string(),
+  'hub.challenge': z.string().min(5).max(30),
   'hub.mode': z.enum(['subscribe']),
 })
 
@@ -40,7 +40,7 @@ app.get('/meta/hub', zodValidation('query', MetaVerificationSchema), (ctx) => {
   return ctx.text('Ko le werk', 400)
 })
 
-app.use(signatureVerification)
+app.use('/meta/hub', signatureVerification)
 app.post('/meta/hub', async (ctx) => {
   console.log('req->', await ctx.req.raw.clone().json())
   return ctx.text('ok')
