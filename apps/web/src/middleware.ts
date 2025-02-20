@@ -1,6 +1,18 @@
-import { clerkMiddleware } from '@clerk/nextjs/server'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-export default clerkMiddleware()
+const isAllAccessRoute = createRouteMatcher(['/'])
+const isGuestOnlyRoute = createRouteMatcher([])
+
+export default clerkMiddleware(async (auth, req) => {
+  if (isAllAccessRoute(req)) return
+  if (isGuestOnlyRoute(req)) {
+    if ((await auth()).userId) {
+      // move them to an authenticated route
+    }
+  }
+
+  await auth.protect()
+})
 
 export const config = {
   matcher: [
