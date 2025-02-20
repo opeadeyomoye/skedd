@@ -40,3 +40,6 @@ a {
     color-scheme: dark;
   }
 }
+
+@import "tailwindcss";
+
