@@ -106,7 +106,7 @@ export default function Page() {
                       </span>
                     </SignInButton>
                   </SignedOut>
-                  <SignedIn><UserProfile/></SignedIn>
+                  <SignedIn><UserButton/></SignedIn>
                 </div>
               </div>
             </div>
