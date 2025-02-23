@@ -75,9 +75,6 @@ importers:
 
   apps/worker:
     dependencies:
-      '@types/node':
-        specifier: ^22.13.4
-        version: 22.13.4
       hono:
         specifier: ^4.6.20
         version: 4.7.0
@@ -91,6 +88,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20250109.0
         version: 4.20250204.0
+      '@types/node':
+        specifier: ^22.13.4
+        version: 22.13.4
       vitest:
         specifier: 2.1.8
         version: 2.1.8(@types/node@22.13.4)(lightningcss@1.29.1)
