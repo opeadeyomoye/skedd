@@ -25,8 +25,8 @@
     {
       "binding": "DB",
       "database_name": "skedd-db",
-      "database_id": "",
-      "migrations_dir": "drizzle/migrations"
+      "database_id": "unknown-id",
+      "migrations_dir": "drizzle"
     }
   ],
   // "ai": {

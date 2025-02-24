@@ -3,7 +3,10 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
-    "test": "vitest"
+    "test": "vitest",
+    "generate": "drizzle-kit generate",
+    "migrate": "wrangler d1 migrations apply skedd-db",
+    "migrate-local": "pnpm migrate --local"
   },
   "dependencies": {
     "drizzle-orm": "^0.39.3",
@@ -17,6 +20,6 @@
     "@types/node": "^22.13.4",
     "drizzle-kit": "^0.30.4",
     "vitest": "2.1.8",
-    "wrangler": "^3.109.1"
+    "wrangler": "^3.109.2"
   }
 }
