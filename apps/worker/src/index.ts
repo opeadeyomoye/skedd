@@ -8,6 +8,7 @@ import zodValidation from './middleware/zodValidation'
 type Bindings = {
   META_APP_VERIFY_TOKEN: string
   META_APP_SECRET: string
+  DB: D1Database
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
