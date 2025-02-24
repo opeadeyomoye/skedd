@@ -4,6 +4,8 @@ import { timingSafeEqual } from 'node:crypto'
 import { z } from 'zod'
 import signatureVerification from './middleware/signatureVerification'
 import zodValidation from './middleware/zodValidation'
+import { drizzle } from 'drizzle-orm/d1'
+import * as schema from './schema'
 
 const app = new Hono<AppEnv>()
 
@@ -35,6 +37,10 @@ app.get('/meta/hub', zodValidation('query', MetaVerificationSchema), (ctx) => {
   return ctx.text('Ko le werk', 400)
 })
 
+app.use(async (c, next) => {
+  c.set('db', drizzle(c.env.DB, { schema }))
+  await next()
+})
 app.use('/meta/hub', signatureVerification)
 app.post('/meta/hub', async (ctx) => {
   console.log('req->', await ctx.req.raw.clone().json())

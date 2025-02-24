@@ -8,6 +8,9 @@ type WorkerBindings = {
 interface AppEnv {
   Bindings: WorkerBindings,
   Variables: {
+    db: import('drizzle-orm/d1').DrizzleD1Database<typeof import('./src/schema')> & {
+      $client: D1Database;
+    }
   }
 }
 
