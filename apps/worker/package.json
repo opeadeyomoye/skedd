@@ -3,11 +3,11 @@
   "scripts": {
     "dev": "wrangler dev -e dev",
     "deploy": "wrangler deploy --minify",
-    "test": "pnpm migrate:test; vitest",
+    "test": "rm -rf ./.tmp/drizzle; pnpm generate:test; vitest",
     "generate": "drizzle-kit generate",
+    "generate:test": "drizzle-kit generate --name=test_db --config=drizzle-test.config.ts",
     "migrate": "wrangler d1 migrations apply skedd-db",
-    "migrate:dev": "wrangler d1 migrations apply dev-skedd-db --local -e dev",
-    "migrate:test": "wrangler d1 migrations apply test-skedd-db --local -e test"
+    "migrate:dev": "wrangler d1 migrations apply dev-skedd-db --local -e dev"
   },
   "dependencies": {
     "drizzle-orm": "^0.39.3",
@@ -16,11 +16,11 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.6.13",
-    "@cloudflare/workers-types": "^4.20250109.0",
+    "@cloudflare/workers-types": "^4.20250224.0",
     "@faker-js/faker": "^9.5.0",
     "@types/node": "^22.13.4",
     "drizzle-kit": "^0.30.4",
     "vitest": "2.1.8",
-    "wrangler": "^3.109.2"
+    "wrangler": "^3.109.3"
   }
 }

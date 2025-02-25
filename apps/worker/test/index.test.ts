@@ -1,6 +1,7 @@
 import { env, SELF } from 'cloudflare:test'
 import { faker } from '@faker-js/faker'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
+import * as WA from '../src/wa'
 
 const fetchPath = (p: string, init?: RequestInit) => SELF.fetch(`https://x.it${p}`, init)
 const signRequestBody = async (key: string, body: Record<string, unknown>) => {
@@ -22,6 +23,11 @@ const signRequestBody = async (key: string, body: Record<string, unknown>) => {
     .join('')
 }
 
+beforeAll(async () => {
+  // @ts-ignore
+  const sql = (await import('../.tmp/drizzle/0000_test_db.sql?raw')).default
+  await env.DB.prepare(sql).run()
+})
 
 describe('the worker', () => {
   it('rejects unsigned requests to /meta/hub', async () => {
@@ -51,6 +57,8 @@ describe('the worker', () => {
   })
 
   it('prevents unknown whatsApp numbers from reaching the LLM', async () => {
+    const msgSpy = vi.spyOn(WA.messages, 'sendText')
+
     const body = {
       entry: [{
         changes: [{
@@ -75,6 +83,7 @@ describe('the worker', () => {
      */
     expect(response.status).toBe(200) // else meta will be unhappy
     expect(await response.text()).toBe('unknown sender')
+    expect(msgSpy).toHaveBeenCalledOnce()
   })
 
   it.todo('lets verified numbers reach the LLM', async () => {
