@@ -1,10 +1,8 @@
 import { env, SELF } from 'cloudflare:test'
 import { faker } from '@faker-js/faker'
-import { describe, it, expect,  } from 'vitest'
-
+import { describe, expect, it } from 'vitest'
 
 const fetchPath = (p: string, init?: RequestInit) => SELF.fetch(`https://x.it${p}`, init)
-
 const signRequestBody = async (key: string, body: Record<string, unknown>) => {
   const encoder = new TextEncoder()
   const encodedBody = encoder.encode(JSON.stringify(body))
@@ -52,8 +50,31 @@ describe('the worker', () => {
     expect(await response.text()).toBe('Invalid signature')
   })
 
-  it.todo('prevents unknown whatsApp numbers from reaching the LLM', async () => {
-    expect(true).toBe('')
+  it('prevents unknown whatsApp numbers from reaching the LLM', async () => {
+    const body = {
+      entry: [{
+        changes: [{
+          value: { messages: [{
+            type: 'text',
+            from: '123456789',
+            text: { body: 'hi!' }
+          }] }
+        }]
+      }]
+    }
+    const signature = await signRequestBody(env.META_APP_SECRET, body)
+    const response = await fetchPath('/meta/hub', {
+      method: 'post',
+      headers: { 'x-hub-signature-256': `sha256=${signature}` },
+      body: JSON.stringify(body),
+    })
+
+    /**
+     * make a whatsapp message delivery notification with an unknown number
+     * expect the user to be sent a verification message
+     */
+    expect(response.status).toBe(200) // else meta will be unhappy
+    expect(await response.text()).toBe('unknown sender')
   })
 
   it.todo('lets verified numbers reach the LLM', async () => {

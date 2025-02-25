@@ -5,7 +5,9 @@ import { z } from 'zod'
 import signatureVerification from './middleware/signatureVerification'
 import zodValidation from './middleware/zodValidation'
 import { drizzle } from 'drizzle-orm/d1'
-import * as schema from './schema'
+import * as dbSchema from './schema'
+import { type Payloads } from './wa'
+import loadWhatsAppUser from './middleware/loadWhatsAppUser'
 
 const app = new Hono<AppEnv>()
 
@@ -38,12 +40,18 @@ app.get('/meta/hub', zodValidation('query', MetaVerificationSchema), (ctx) => {
 })
 
 app.use(async (c, next) => {
-  c.set('db', drizzle(c.env.DB, { schema }))
+  c.set('db', drizzle(c.env.DB, { schema: dbSchema }))
   await next()
 })
-app.use('/meta/hub', signatureVerification)
+
+app.use('/meta/hub', signatureVerification, loadWhatsAppUser)
 app.post('/meta/hub', async (ctx) => {
-  console.log('req->', await ctx.req.raw.clone().json())
+  const json = await ctx.req.raw.clone().json<Payloads.TextMessage>()
+
+  const number = json.entry[0].changes[0].value.messages[0].from
+  const text = json.entry[0].changes[0].value.messages[0].text.body
+
+  console.log(`'msg from ${number}'`, text)
   return ctx.text('ok')
 })
 

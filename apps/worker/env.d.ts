@@ -5,12 +5,16 @@ type WorkerBindings = {
   DB: D1Database
 }
 
+type AppDatabaseSchema = typeof import('./src/schema')
 interface AppEnv {
-  Bindings: WorkerBindings,
+  Bindings: WorkerBindings
   Variables: {
-    db: import('drizzle-orm/d1').DrizzleD1Database<typeof import('./src/schema')> & {
-      $client: D1Database;
+    db: import('drizzle-orm/d1').DrizzleD1Database<AppDatabaseSchema> & {
+      $client: D1Database
     }
+    waUser?: import('drizzle-orm').InferModelFromColumns<
+      AppDatabaseSchema['whatsAppUsers']['_']['columns']
+    >
   }
 }
 
