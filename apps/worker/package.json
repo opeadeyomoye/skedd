@@ -1,12 +1,13 @@
 {
   "name": "worker",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev -e dev",
     "deploy": "wrangler deploy --minify",
-    "test": "vitest",
+    "test": "pnpm migrate:test; vitest",
     "generate": "drizzle-kit generate",
     "migrate": "wrangler d1 migrations apply skedd-db",
-    "migrate-local": "pnpm migrate --local"
+    "migrate:dev": "wrangler d1 migrations apply dev-skedd-db --local -e dev",
+    "migrate:test": "wrangler d1 migrations apply test-skedd-db --local -e test"
   },
   "dependencies": {
     "drizzle-orm": "^0.39.3",

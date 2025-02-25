@@ -6,9 +6,41 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
+  "vars": {
+    "ENVIRONMENT": "production"
+  },
+  "env": {
+    "dev": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "dev-skedd-db",
+          "database_id": "id-dev-skedd-db",
+          "migrations_dir": "drizzle"
+        }
+      ],
+    },
+    "test": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "test-skedd-db",
+          "database_id": "id-test-skedd-db",
+          "migrations_dir": "drizzle"
+        }
+      ],
+    },
+    "production": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "skedd-db",
+          "database_id": "",
+          "migrations_dir": "drizzle"
+        }
+      ],
+    },
+  },
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
@@ -21,14 +53,6 @@
   //     "bucket_name": "my-bucket"
   //   }
   // ],
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "skedd-db",
-      "database_id": "unknown-id",
-      "migrations_dir": "drizzle"
-    }
-  ],
   // "ai": {
   //   "binding": "AI"
   // },
