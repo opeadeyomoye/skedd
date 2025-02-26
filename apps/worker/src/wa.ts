@@ -1,4 +1,29 @@
 
+export const messages = {
+  sendText(env: WorkerBindings, number: string, text: string) {
+    const url = `https://graph.facebook.com/v21.0/${env.WA_BUSINESS_PHONE_ID}/messages`
+    const init: RequestInit = {
+      method: 'post',
+      headers: {
+        Authorization: `Bearer ${env.META_APP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: `${number}`,
+        type: 'text',
+        text: {
+          // preview_url: true, // doesn't work just yet
+          body: text
+        }
+      })
+    }
+
+    return fetch(url, init)
+  }
+}
+
 export namespace Payloads {
   export interface TextMessage {
     object: 'whatsapp_business_account'
