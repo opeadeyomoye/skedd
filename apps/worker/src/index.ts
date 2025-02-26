@@ -48,6 +48,11 @@ app.use('/meta/hub', signatureVerification, loadWhatsAppUser)
 app.post('/meta/hub', async (ctx) => {
   const json = await ctx.req.raw.clone().json<Payloads.TextMessage>()
 
+  const messageList = json.entry[0].changes[0].value.messages
+  if (!messageList?.length) {
+    return ctx.text('ghosting non-message hooks for now ✌️')
+  }
+
   const number = json.entry[0].changes[0].value.messages[0].from
   const text = json.entry[0].changes[0].value.messages[0].text.body
 
