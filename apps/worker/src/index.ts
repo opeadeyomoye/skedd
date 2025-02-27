@@ -11,6 +11,7 @@ import * as dbSchema from './schema'
 import { type Payloads } from './wa'
 
 import { clerkMiddleware } from '@hono/clerk-auth'
+import requireClerkAuth from './middleware/requireClerkAuth'
 
 const app = new Hono<AppEnv>()
 
@@ -59,7 +60,7 @@ app.post('/meta/hub', async (ctx) => {
   return ctx.text('ok')
 })
 
-app.use(clerkMiddleware())
+app.use(clerkMiddleware(), requireClerkAuth)
 app.get(
   '/whatsapp-verifications/:id',
   zodValidation('param',
@@ -73,5 +74,23 @@ app.get(
   )
 )
 
+app.post(
+  '/whatsapp-verifications/:id',
+  zodValidation('param',
+    z.object({
+      id: z.string().length(16)
+    })
+  ),
+  zodValidation('json',
+    z.object({
+      code: z.string().min(6).max(8),
+    })
+  ),
+  async (ctx) => whatsAppVerificationHandlers.verify(
+    ctx,
+    ctx.req.valid('param').id,
+    ctx.req.valid('param').code,
+  )
+)
 
 export default app

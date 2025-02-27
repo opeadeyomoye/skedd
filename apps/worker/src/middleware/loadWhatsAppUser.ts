@@ -7,7 +7,7 @@ Thank you trying out skedd! 🥳
 
 To get started, please go to the following url and enter the code *${code}* to link this number with your Google (Calendar) account:
 
-https://skedd.xyz/numbers/${id}/verify
+https://skedd.xyz/device/${id}/link
 `
 
 export default createMiddleware<AppEnv>(async (ctx, next) => {

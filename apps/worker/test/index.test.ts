@@ -86,6 +86,8 @@ describe('the worker', () => {
     expect(msgSpy).toHaveBeenCalledOnce()
   })
 
+  it.todo('successfully links WA numbers with user accounts')
+
   it.todo('lets verified numbers reach the LLM', async () => {
     expect(true).toBe(null)
   })
