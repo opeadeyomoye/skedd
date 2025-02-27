@@ -1,13 +1,16 @@
-import { Hono } from 'hono'
+import { type Context, Hono } from 'hono'
 import { Buffer } from 'node:buffer'
 import { timingSafeEqual } from 'node:crypto'
 import { z } from 'zod'
+import * as whatsAppVerificationHandlers from './handlers/whatsAppVerification'
+import loadWhatsAppUser from './middleware/loadWhatsAppUser'
 import signatureVerification from './middleware/signatureVerification'
 import zodValidation from './middleware/zodValidation'
 import { drizzle } from 'drizzle-orm/d1'
 import * as dbSchema from './schema'
 import { type Payloads } from './wa'
-import loadWhatsAppUser from './middleware/loadWhatsAppUser'
+
+import { clerkMiddleware } from '@hono/clerk-auth'
 
 const app = new Hono<AppEnv>()
 
@@ -55,5 +58,20 @@ app.post('/meta/hub', async (ctx) => {
   console.log(`'msg from ${number}'`, text)
   return ctx.text('ok')
 })
+
+app.use(clerkMiddleware())
+app.get(
+  '/whatsapp-verifications/:id',
+  zodValidation('param',
+    z.object({
+      id: z.string().length(16)
+    })
+  ),
+  async (ctx) => whatsAppVerificationHandlers.get(
+    ctx,
+    ctx.req.valid('param').id
+  )
+)
+
 
 export default app

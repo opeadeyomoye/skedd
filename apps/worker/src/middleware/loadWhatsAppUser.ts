@@ -3,9 +3,11 @@ import { messages, Payloads } from '../wa'
 import { randomString } from '../util/string'
 
 const linkNumberMsg = (id: string, code: string) => `
-Try this link broski -> https://skedd.xyz/numbers/${id}/verify
+Thank you trying out skedd! 🥳
 
-Pop in *${code}* and you should be good to go.
+To get started, please go to the following url and enter the code *${code}* to link this number with your Google (Calendar) account:
+
+https://skedd.xyz/numbers/${id}/verify
 `
 
 export default createMiddleware<AppEnv>(async (ctx, next) => {
