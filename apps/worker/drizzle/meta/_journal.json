@@ -15,6 +15,13 @@
       "when": 1740490235218,
       "tag": "0001_safe_otto_octavius",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1740712484757,
+      "tag": "0002_sad_wolfpack",
+      "breakpoints": true
     }
   ]
 }

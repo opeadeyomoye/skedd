@@ -16,7 +16,7 @@ export const whatsAppVerifications = sqliteTable('whatsapp_verifications', {
   code: text({ length: 8 }).notNull(),
   createdAt: text({ length: 26 }).notNull().default(sql`(CURRENT_TIMESTAMP)`),
   codeExpiresAt: integer({ mode: 'number' }).notNull(),
-  completedAt: text({ length: 26 }),
+  completedAt: integer({ mode: 'timestamp' }),
 })
 
 /**
