@@ -4,8 +4,8 @@ import { auth } from '@clerk/nextjs/server'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { Button } from '@/components/button'
 import OtpForm from './OtpForm'
+import apiFetch from '@/apiFetch'
 
-const apiRoot = process.env.NEXT_PUBLIC_API_ROOT
 const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
 
 export default async function LinkPage({ params }: { params: Promise<{ vid: string }> }) {
@@ -20,7 +20,7 @@ export default async function LinkPage({ params }: { params: Promise<{ vid: stri
   const { vid } = await params
   let deets
   try {
-    deets = await fetch(`${apiRoot}/whatsapp-verifications/${vid}`, {
+    deets = await apiFetch(token).get(`/whatsapp-verifications/${vid}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
   }

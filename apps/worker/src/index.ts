@@ -1,17 +1,16 @@
-import { type Context, Hono } from 'hono'
+import { clerkMiddleware } from '@hono/clerk-auth'
+import { drizzle } from 'drizzle-orm/d1'
+import { Hono } from 'hono'
 import { Buffer } from 'node:buffer'
 import { timingSafeEqual } from 'node:crypto'
 import { z } from 'zod'
-import * as whatsAppVerificationHandlers from './handlers/whatsAppVerification'
 import loadWhatsAppUser from './middleware/loadWhatsAppUser'
+import requireClerkAuth from './middleware/requireClerkAuth'
 import signatureVerification from './middleware/signatureVerification'
+import * as whatsAppVerificationHandlers from './handlers/whatsAppVerification'
 import zodValidation from './middleware/zodValidation'
-import { drizzle } from 'drizzle-orm/d1'
 import * as dbSchema from './schema'
 import { type Payloads } from './wa'
-
-import { clerkMiddleware } from '@hono/clerk-auth'
-import requireClerkAuth from './middleware/requireClerkAuth'
 
 const app = new Hono<AppEnv>()
 
@@ -89,8 +88,23 @@ app.post(
   async (ctx) => whatsAppVerificationHandlers.verify(
     ctx,
     ctx.req.valid('param').id,
-    ctx.req.valid('param').code,
+    ctx.req.valid('json').code,
   )
 )
+
+app.get(`/devices`, async (c) => {
+  const user = await c.get('db').query.whatsAppUsers.findFirst({
+    where: (users, { eq }) => eq(users.userId, <string>c.get('clerkAuth')?.userId)
+  }).catch(() => undefined)
+
+  if (!user) {
+    return c.json({}, 404)
+  }
+
+  return c.json([{
+    phoneMask: user.phoneNumber.slice(-4),
+    connectedAt: user.createdAt
+  }])
+})
 
 export default app

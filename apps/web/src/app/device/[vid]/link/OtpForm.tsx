@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 import {
   InputOTP,
@@ -8,36 +9,34 @@ import {
   InputOTPSlot,
 } from '@/components/input-otp'
 import { Button } from '@/components/button'
-import useFetch from '@/hooks/useFetch'
-
-const apiRoot = process.env.NEXT_PUBLIC_API_ROOT
+import useApi from '@/hooks/useApi'
 
 type Props = {
   vid: string
 }
 
-export default async function OtpForm({ vid }: Props) {
-  const appFetch = await useFetch()
+export default function OtpForm({ vid }: Props) {
+  const api = useApi()
+  const router = useRouter()
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
 
     try {
-      const res = await appFetch(`${apiRoot}/whatsapp-verifications/${vid}`, {
-        method: 'post',
-        headers: {'content-type': 'application/json'},
+      const res = await (await api).post(`/whatsapp-verifications/${vid}`, {
         body: JSON.stringify({ code: value })
       })
       if (res.ok) {
-        return //redirect
+        return router.push('/device?c=true')
       }
       setError('That didn\'t work. Please check the code and try again.')
     }
-    catch {
+    catch (e) {
       return setError('Something went wrong. Please try again.')
     }
   }
+
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
 
