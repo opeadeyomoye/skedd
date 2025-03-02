@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "worker",
+  "name": "worker-main",
   "main": "src/index.ts",
   "compatibility_date": "2025-02-12",
   "compatibility_flags": [
@@ -14,6 +14,12 @@
           "database_name": "dev-skedd-db",
           "database_id": "id-dev-skedd-db",
           "migrations_dir": "drizzle"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "KV_SKEDD_CHATS",
+          "id": "id-dev-kv-skedd-chats"
         }
       ],
     },
@@ -36,8 +42,14 @@
         {
           "binding": "DB",
           "database_name": "skedd-db",
-          "database_id": "",
+          "database_id": "7c0b52eb-30c9-4751-bcac-1a4c98377b32",
           "migrations_dir": "drizzle"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "KV_SKEDD_CHATS",
+          "id": "b1218dcfa0634912a16514e23fdf702f"
         }
       ],
     },

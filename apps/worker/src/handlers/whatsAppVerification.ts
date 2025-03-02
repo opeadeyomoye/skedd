@@ -3,7 +3,7 @@ import { eq, isNull } from 'drizzle-orm'
 import { whatsAppUsers, whatsAppVerifications } from '../schema'
 import { messages } from '../wa'
 
-export async function get(ctx: Context<AppEnv>, id: string ) {
+export async function get(ctx: Context<AppEnv>, id: string) {
   // find non-expired match for the code
   const rex = await ctx.get('db').query.whatsAppVerifications.findFirst({
     where: (table, { and, eq, gt }) => and(
@@ -59,7 +59,7 @@ export async function verify(ctx: Context<AppEnv>, id: string, code: string) {
     welcomeText
   ).catch(() => null)
 
-  return ctx.json({})
+  return ctx.json({}, 201)
 }
 
 const welcomeText = `
