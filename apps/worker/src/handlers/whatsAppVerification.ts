@@ -47,7 +47,7 @@ export async function verify(ctx: Context<AppEnv>, id: string, code: string) {
 
   db.insert(whatsAppUsers).values({
     phoneNumber: rex.phoneNumber,
-    userId: ctx.get('clerkAuth')?.userId as string,
+    userId: <string>ctx.get('clerkAuth')?.userId,
     verificationId: rex.id,
   })
     .execute()

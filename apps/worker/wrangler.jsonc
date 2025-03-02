@@ -22,6 +22,9 @@
           "id": "id-dev-kv-skedd-chats"
         }
       ],
+      "ai": {
+        "binding": "AI"
+      },
     },
     // CF's vitest integration isolates storage per-test by default.
     // i.e. fresh storage per test-runner session, and any changes made by one test
@@ -52,6 +55,9 @@
           "id": "b1218dcfa0634912a16514e23fdf702f"
         }
       ],
+      "ai": {
+        "binding": "AI"
+      },
     },
   },
   // "kv_namespaces": [
@@ -66,9 +72,6 @@
   //     "bucket_name": "my-bucket"
   //   }
   // ],
-  // "ai": {
-  //   "binding": "AI"
-  // },
   // "observability": {
   //   "enabled": true,
   //   "head_sampling_rate": 1

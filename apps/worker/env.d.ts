@@ -5,6 +5,8 @@ type WorkerBindings = {
   META_APP_ACCESS_TOKEN: string
   WA_BUSINESS_PHONE_ID: string
   DB: D1Database
+  KV_SKEDD_CHATS: KVNamespace
+  AI: Ai
 }
 
 type AppDatabaseSchema = typeof import('./src/schema')
