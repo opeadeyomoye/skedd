@@ -8,9 +8,9 @@ import loadWhatsAppUser from './middleware/loadWhatsAppUser'
 import requireClerkAuth from './middleware/requireClerkAuth'
 import signatureVerification from './middleware/signatureVerification'
 import * as whatsAppVerificationHandlers from './handlers/whatsAppVerification'
+import * as whatsAppWebhooksHandlers from './handlers/whatsAppWebhooks'
 import zodValidation from './middleware/zodValidation'
 import * as dbSchema from './schema'
-import * as WA from './wa'
 
 const app = new Hono<AppEnv>()
 
@@ -48,60 +48,7 @@ app.use(async (c, next) => {
 })
 
 app.use('/meta/hub', signatureVerification, loadWhatsAppUser)
-app.post('/meta/hub', async (ctx) => {
-  /**
-   * create cache key if not exists
-   * pipe message to LLM context and orchestrate tool calling
-   */
-  const json = await ctx.req.raw.clone().json<WA.Payloads.TextMessage>()
-
-  const waMessage = json.entry[0].changes[0].value.messages[0]
-  const number = waMessage.from
-  const text = waMessage.text.body
-  const user = await ctx.get('db').query.whatsAppUsers.findFirst({
-    where: (users, { eq }) => eq(users.phoneNumber, number)
-  })
-
-  if (!text.trim() || !user?.userId) {
-    return ctx.text('weird')
-  }
-  type StoredConversation = {
-    context: RoleScopedChatInput[]
-  }
-
-  const convoKey = `users.${user?.userId}.chatContext`
-  const conversation = await ctx.env.KV_SKEDD_CHATS.get<StoredConversation>(
-    convoKey, 'json'
-  ) ?? { context: [] }
-  conversation.context.push({ role: 'user', content: text })
-
-  const prompt: RoleScopedChatInput[] = []
-  prompt.push(...conversation.context)
-  prompt.unshift({
-    role: 'system',
-    content: 'You are a general purpose AI assistant named Skedd. Help the user with whatever they want.',
-  })
-
-  const call = <GenResponseObj>(await ctx.env.AI.run(
-    '@hf/nousresearch/hermes-2-pro-mistral-7b',
-    { messages: prompt }
-  ))
-  conversation.context.push({
-    role: 'assistant',
-    content: call.response || ''
-  })
-  ctx.env.KV_SKEDD_CHATS.put(convoKey, JSON.stringify(conversation))
-
-  await WA.messages.sendText(
-    ctx.env,
-    number,
-    call.response || ''
-  )
-  type GenResponseObj<T extends AiTextGenerationOutput = AiTextGenerationOutput> =
-    T extends { response?: string } ? T : never
-
-  return ctx.text('ok')
-})
+app.post('/meta/hub', whatsAppWebhooksHandlers.onMessage)
 
 app.use(clerkMiddleware(), requireClerkAuth)
 app.get(
