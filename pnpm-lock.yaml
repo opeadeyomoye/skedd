@@ -81,15 +81,15 @@ importers:
       '@clerk/backend':
         specifier: ^1.24.3
         version: 1.24.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@googleapis/calendar':
+        specifier: ^9.8.0
+        version: 9.8.0
       '@hono/clerk-auth':
         specifier: ^2.0.0
         version: 2.0.0(@clerk/backend@1.24.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(hono@4.7.0)
       drizzle-orm:
         specifier: ^0.39.3
         version: 0.39.3(@cloudflare/workers-types@4.20250224.0)
-      googleapis:
-        specifier: ^146.0.0
-        version: 146.0.0
       hono:
         specifier: ^4.6.20
         version: 4.7.0
@@ -891,6 +891,10 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
+
+  '@googleapis/calendar@9.8.0':
+    resolution: {integrity: sha512-5IG4x/bOvdDFLEzNX/HyvN4LUtuMFTv4eYqZcgwSWBHiBwCfN1zIVLPP6ENbIOR5sIceLpOS35NqknoaAiTJ1g==}
+    engines: {node: '>=12.0.0'}
 
   '@headlessui/react@2.2.0':
     resolution: {integrity: sha512-RzCEg+LXsuI7mHiSomsu/gBJSjpupm6A1qIZ5sWjd7JhARNlMiSA4kKfJpCKwU9tE+zMRterhhrP74PvfJrpXQ==}
@@ -2172,10 +2176,6 @@ packages:
 
   googleapis-common@7.2.0:
     resolution: {integrity: sha512-/fhDZEJZvOV3X5jmD+fKxMqma5q2Q9nZNSF3kn1F18tpxmA86BcTxAGBQdM0N89Z3bEaIs+HVznSmFJEAmMTjA==}
-    engines: {node: '>=14.0.0'}
-
-  googleapis@146.0.0:
-    resolution: {integrity: sha512-NewqvhnBZOJsugCAOo636O0BGE/xY7Cg/v8Rjm1+5LkJCjcqAzLleJ6igd5vrRExJLSKrY9uHy9iKE7r0PrfhQ==}
     engines: {node: '>=14.0.0'}
 
   gopd@1.2.0:
@@ -3802,6 +3802,13 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
+  '@googleapis/calendar@9.8.0':
+    dependencies:
+      googleapis-common: 7.2.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   '@headlessui/react@2.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@floating-ui/react': 0.26.28(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -5194,14 +5201,6 @@ snapshots:
       qs: 6.14.0
       url-template: 2.0.8
       uuid: 9.0.1
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-
-  googleapis@146.0.0:
-    dependencies:
-      google-auth-library: 9.15.1
-      googleapis-common: 7.2.0
     transitivePeerDependencies:
       - encoding
       - supports-color
