@@ -13,6 +13,7 @@
     "@clerk/backend": "^1.24.3",
     "@hono/clerk-auth": "^2.0.0",
     "drizzle-orm": "^0.39.3",
+    "googleapis": "^146.0.0",
     "hono": "^4.6.20",
     "zod": "^3.24.2"
   },
