@@ -1,5 +1,7 @@
 import { type Context } from 'hono'
+import { ClerkClient, createClerkClient } from '@clerk/backend'
 import * as WA from '../wa'
+import * as calendarTools from '../tools/calendar'
 
 export async function onMessage(ctx: Context<AppEnv>) {
   /**
@@ -32,43 +34,114 @@ export async function onMessage(ctx: Context<AppEnv>) {
   prompt.push(...conversation.context)
   prompt.unshift({
     role: 'system',
-    content: `You are a general purpose AI assistant named Skedd. Help the user with whatever they want.`.trim(),
+    content: `
+You are a general purpose AI assistant named Skedd. Help the user with whatever they want.
+To help the user manage their calendar events, use the tools available to you. They're already fitted with the necessary authorization codes.
+It is currently ${(new Date()).toString()}.
+`.trim(),
   })
 
   let result = <GenResponseObj>(await ctx.env.AI.run(
     '@hf/nousresearch/hermes-2-pro-mistral-7b',
-    { messages: prompt }
+    {
+      messages: prompt,
+      tools: Object.values(calendarTools.toolDefinitions)
+    }
   ))
 
-  conversation.context.push({
+  result.response && conversation.context.push({
     role: 'assistant',
-    content: result.response || ''
+    content: result.response
   })
 
-  let finalText = ''
-  finalText += result.response || ''
+  const finalText = []
+  finalText.push(result.response)
 
   while (result.tool_calls !== undefined) {
     for (const toolcall of result.tool_calls) {
-      //
+      if (toolcall.name.startsWith(calendarTools.toolNamePrefix)) {
+        const clerkClient = createClerkClient({
+          secretKey: ctx.env.CLERK_SECRET_KEY,
+          publishableKey: ctx.env.CLERK_PUBLISHABLE_KEY,
+        })
+        const res = await callCalendarTool({
+          clerkClient,
+          userId: user.userId,
+          // @ts-ignore
+          toolName: toolcall.name,
+          // @ts-ignore
+          toolArgs: toolcall.arguments
+        })
+
+        const toolResult = {
+          role: 'tool',
+          name: toolcall.name,
+          content: res?.content[0].text || ''
+        }
+        conversation.context.push(toolResult)
+        prompt.push(toolResult)
+
+        result = <GenResponseObj>(await ctx.env.AI.run(
+          '@hf/nousresearch/hermes-2-pro-mistral-7b',
+          {
+            messages: prompt,
+            tools: Object.values(calendarTools.toolDefinitions)
+          }
+        ))
+        if (result.response) {
+          conversation.context.push({ role: 'assistant', content: result.response })
+          prompt.push({ role: 'assistant', content: result.response })
+          finalText.push(result.response)
+        }
+        continue
+      }
+      // unknown tool
     }
   }
 
   ctx.env.KV_SKEDD_CHATS.put(convoKey, JSON.stringify(conversation))
-console.log('prompting with...', prompt)
   await WA.messages.sendText(
     ctx.env,
     number,
-    result.response || ''
+    finalText.join('\n--\n')
   )
-  type GenResponseObj<T extends AiTextGenerationOutput = AiTextGenerationOutput> =
-    T extends { response?: string } ? T : never
 
   return ctx.text('ok')
+}
 
-/**
- * calling any calendar related function requires getting the user's access token
- * tools/calendar(?)
- *
- */
+type GenResponseObj<T extends AiTextGenerationOutput = AiTextGenerationOutput> =
+  T extends { response?: string } ? T : never
+
+type CallCalendarToolArgs<T extends calendarTools.ToolName> = {
+  clerkClient: ClerkClient
+  userId: string
+  toolName: T
+  toolArgs: calendarTools.ToolArguments<T>
+}
+
+async function callCalendarTool<T extends calendarTools.ToolName>({
+  clerkClient,
+  userId,
+  toolName,
+  toolArgs
+}: CallCalendarToolArgs<T>) {
+  let token
+  try {
+    const clerkResponse = await clerkClient.users.getUserOauthAccessToken(userId, 'google')
+    token = clerkResponse.data[0].token
+  }
+  catch (e) {
+    // throw specific?
+  }
+
+  if (!token) {
+    // problem
+    return null
+  }
+  try {
+    return await calendarTools.callTool(token, toolName, toolArgs)
+  }
+  catch (e) {
+    return null
+  }
 }
