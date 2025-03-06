@@ -1,4 +1,4 @@
-import google from 'googleapis'
+import { auth, calendar_v3 } from '@googleapis/calendar'
 import { z } from 'zod'
 
 interface CalendarListEntry {
@@ -82,14 +82,14 @@ export const toolDefinitions = {
         },
         timeMin: {
           type: 'string',
-          description: 'Start time in ISO format (optional)',
+          description: 'Start time in ISO format',
         },
         timeMax: {
           type: 'string',
-          description: 'End time in ISO format (optional)',
+          description: 'End time in ISO format',
         },
       },
-      required: ['calendarId'],
+      required: ['calendarId', 'timeMin', 'timeMax'],
     },
   },
   [`${prefix}.create-event`]: {
@@ -212,17 +212,134 @@ export const toolDefinitions = {
   },
 } as const
 
-export function callTool<T extends ToolName>(name: T, args: ToolArguments<T>) {
-  //
+
+export async function callTool<T extends ToolName>(
+  accessToken: string,
+  name: T,
+  args: ToolArguments<T>
+) {
+  const calendar = new calendar_v3.Calendar({
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    },
+  })
+
+  try {
+    switch (name) {
+      case 'calendar.google.list-calendars': {
+        const response = await calendar.calendarList.list()
+        const calendars = response.data.items || []
+        return {
+          content: [{
+            type: 'text',
+            text: calendars.map((cal: CalendarListEntry) =>
+              `${cal.summary || 'Untitled'} (${cal.id || 'no-id'})`).join('\n')
+          }]
+        }
+      }
+
+      case 'calendar.google.list-events': {
+        const validArgs = ListEventsArgumentsSchema.parse(args)
+        const response = await calendar.events.list({
+          calendarId: validArgs.calendarId,
+          timeMin: validArgs.timeMin,
+          timeMax: validArgs.timeMax,
+          singleEvents: true,
+          orderBy: 'startTime',
+        })
+
+        const events = response.data.items || []
+        return {
+          content: [{
+            type: 'text',
+            text: events.map((event: CalendarEvent) => {
+              const attendeeList = event.attendees
+                ? `\nAttendees: ${event.attendees.map((a: CalendarEventAttendee) =>
+                  `${a.email || 'no-email'} (${a.responseStatus || 'unknown'})`).join(', ')}`
+                : ''
+              const locationInfo = event.location ? `\nLocation: ${event.location}` : ''
+              return `${event.summary || 'Untitled'} (${event.id || 'no-id'})${locationInfo}\nStart: ${event.start?.dateTime || event.start?.date || 'unspecified'}\nEnd: ${event.end?.dateTime || event.end?.date || 'unspecified'}${attendeeList}\n`
+            }).join('\n')
+          }]
+        }
+      }
+
+      case 'calendar.google.create-event': {
+        const validArgs = CreateEventArgumentsSchema.parse(args)
+        const event = await calendar.events.insert({
+          calendarId: validArgs.calendarId,
+          requestBody: {
+            summary: validArgs.summary,
+            description: validArgs.description,
+            start: { dateTime: validArgs.start },
+            end: { dateTime: validArgs.end },
+            attendees: validArgs.attendees,
+            location: validArgs.location,
+          },
+        }).then(response => response.data)
+
+        return {
+          content: [{
+            type: 'text',
+            text: `Event created: ${event.summary} (${event.id})`
+          }]
+        }
+      }
+
+      case 'calendar.google.update-event': {
+        const validArgs = UpdateEventArgumentsSchema.parse(args)
+        const event = await calendar.events.patch({
+          calendarId: validArgs.calendarId,
+          eventId: validArgs.eventId,
+          requestBody: {
+            summary: validArgs.summary,
+            description: validArgs.description,
+            start: validArgs.start ? { dateTime: validArgs.start } : undefined,
+            end: validArgs.end ? { dateTime: validArgs.end } : undefined,
+            attendees: validArgs.attendees,
+            location: validArgs.location,
+          },
+        }).then(response => response.data)
+
+        return {
+          content: [{
+            type: 'text',
+            text: `Event updated: ${event.summary} (${event.id})`
+          }]
+        }
+      }
+
+      case 'calendar.google.delete-event': {
+        const validArgs = DeleteEventArgumentsSchema.parse(args)
+        await calendar.events.delete({
+          calendarId: validArgs.calendarId,
+          eventId: validArgs.eventId,
+        })
+
+        return {
+          content: [{
+            type: 'text',
+            text: `Event deleted successfully`
+          }]
+        }
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${name}`)
+    }
+  } catch (error) {
+    console.error('Error processing request:', error)
+    throw error
+  }
 }
 
 type ToolDefinitions = typeof toolDefinitions
-type ToolName = keyof ToolDefinitions
-type ToolArguments<T extends ToolName> = RequiredToolArguments<T> & OptionalToolArugments<T>
+export type ToolName = keyof ToolDefinitions
+export type ToolArguments<T extends ToolName> = RequiredToolArguments<T> & OptionalToolArguments<T>
 type RequiredToolArguments<T extends ToolName> = {
   [K in ToolDefinitions[T]['parameters']['required'][number]]: unknown
 }
-type OptionalToolArugments<T extends ToolName> = Omit<
+type OptionalToolArguments<T extends ToolName> = Omit<
   {
     -readonly[K in keyof ToolDefinitions[T]['parameters']['properties']]?: unknown
   },
