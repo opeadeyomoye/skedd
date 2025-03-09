@@ -142,7 +142,7 @@ export const toolDefinitions = {
   },
   [`${prefix}.update-event`]: {
     name: `${prefix}.update-event`,
-    description: 'Update an existing calendar event',
+    description: 'Update an existing calendar event. Useful for rescheduling calendar events or changing some of their details.',
     parameters: {
       type: 'object',
       properties: {
@@ -233,7 +233,7 @@ export async function callTool<T extends ToolName>(
           content: [{
             type: 'text',
             text: calendars.map((cal: CalendarListEntry) =>
-              `${cal.summary || 'Untitled'} (${cal.id || 'no-id'})`).join('\n')
+              `${cal.summary || 'Untitled'} (calendar-id: ${cal.id || 'no-id'})`).join('\n')
           }]
         }
       }
@@ -255,10 +255,10 @@ export async function callTool<T extends ToolName>(
             text: events.map((event: CalendarEvent) => {
               const attendeeList = event.attendees
                 ? `\nAttendees: ${event.attendees.map((a: CalendarEventAttendee) =>
-                  `${a.email || 'no-email'} (${a.responseStatus || 'unknown'})`).join(', ')}`
+                  `${a.email || 'no-email'} (responseStatus: ${a.responseStatus || 'unknown'})`).join(', ')}`
                 : ''
               const locationInfo = event.location ? `\nLocation: ${event.location}` : ''
-              return `${event.summary || 'Untitled'} (${event.id || 'no-id'})${locationInfo}\nStart: ${event.start?.dateTime || event.start?.date || 'unspecified'}\nEnd: ${event.end?.dateTime || event.end?.date || 'unspecified'}${attendeeList}\n`
+              return `${event.summary || 'Untitled'} (event-id: ${event.id || 'no-id'})${locationInfo}\nStart: ${event.start?.dateTime || event.start?.date || 'unspecified'}\nEnd: ${event.end?.dateTime || event.end?.date || 'unspecified'}${attendeeList}\n`
             }).join('\n')
           }]
         }
@@ -281,7 +281,7 @@ export async function callTool<T extends ToolName>(
         return {
           content: [{
             type: 'text',
-            text: `Event created: ${event.summary} (${event.id})`
+            text: `Event created: ${event.summary} (event-id: ${event.id})`
           }]
         }
       }
@@ -304,7 +304,7 @@ export async function callTool<T extends ToolName>(
         return {
           content: [{
             type: 'text',
-            text: `Event updated: ${event.summary} (${event.id})`
+            text: `Event updated: ${event.summary} (event-id: ${event.id})`
           }]
         }
       }

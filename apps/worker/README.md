@@ -1,8 +1,11 @@
+
 ```
-npm install
-npm run dev
+pnpm install
+pnpm dev
+pnpm test
 ```
 
 ```
-npm run deploy
+
+pnpm deploy
 ```
