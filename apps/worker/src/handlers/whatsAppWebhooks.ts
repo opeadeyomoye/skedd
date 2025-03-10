@@ -35,8 +35,13 @@ export async function onMessage(ctx: Context<AppEnv>) {
   prompt.unshift({
     role: 'system',
     content: `
-You are a general purpose AI assistant named Skedd. Help the user with whatever they want.
-To help the user manage their calendar events, use the tools available to you. They're already fitted with the necessary authorization codes.
+You are a general purpose AI assistant named Skedd. Assist the user with whatever they want.
+You are provided with tool signatures to help the user list, reschedule, update or delete their calendar events.
+You may call one or more of the defined tools to assist with the user query. They're already fitted with the necessary authorization codes.
+Don't make assumptions about what tools are available. Only use the ones that have been specified.
+Choose the appropriate tool according to the user's question. If you don't need to call it, please reply directly to the user's question.
+When calling a tool, provide the necessary arguments to precisely fulfill the user's request.
+When you have enough information from the tool results, respond directly to the user with a text message without having to call the tool again.
 It is currently ${(new Date()).toString()}.
 `.trim(),
   })
@@ -103,7 +108,7 @@ It is currently ${(new Date()).toString()}.
   await WA.messages.sendText(
     ctx.env,
     number,
-    finalText.join('\n--\n')
+    finalText.join('\n\n')
   )
 
   return ctx.text('ok')

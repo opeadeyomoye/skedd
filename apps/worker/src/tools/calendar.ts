@@ -247,15 +247,23 @@ export async function callTool<T extends ToolName>(
           singleEvents: true,
           orderBy: 'startTime',
         })
+        const status = (str?: string | null) => {
+          switch (str) {
+            case 'needsAction':
+              return 'no response yet'
+            default:
+              return str || 'unknown'
+          }
+        }
 
         const events = response.data.items || []
         return {
           content: [{
             type: 'text',
-            text: events.map((event: CalendarEvent) => {
+            text: events.map((event) => {
               const attendeeList = event.attendees
                 ? `\nAttendees: ${event.attendees.map((a: CalendarEventAttendee) =>
-                  `${a.email || 'no-email'} (responseStatus: ${a.responseStatus || 'unknown'})`).join(', ')}`
+                  `${a.email || 'no-email'} (${status(a.responseStatus)})`).join(', ')}`
                 : ''
               const locationInfo = event.location ? `\nLocation: ${event.location}` : ''
               return `${event.summary || 'Untitled'} (event-id: ${event.id || 'no-id'})${locationInfo}\nStart: ${event.start?.dateTime || event.start?.date || 'unspecified'}\nEnd: ${event.end?.dateTime || event.end?.date || 'unspecified'}${attendeeList}\n`
