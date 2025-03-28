@@ -6,6 +6,7 @@ type WorkerBindings = {
   WA_BUSINESS_PHONE_ID: string
   CLERK_PUBLISHABLE_KEY: string
   CLERK_SECRET_KEY: string
+  GOOGLE_GENERATIVE_AI_API_KEY: string
   DB: D1Database
   KV_SKEDD_CHATS: KVNamespace
   AI: Ai

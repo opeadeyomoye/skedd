@@ -10,9 +10,11 @@
     "migrate:dev": "wrangler d1 migrations apply dev-skedd-db --local -e dev"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.2.3",
     "@clerk/backend": "^1.24.3",
     "@googleapis/calendar": "^9.8.0",
     "@hono/clerk-auth": "^2.0.0",
+    "ai": "^4.2.8",
     "drizzle-orm": "^0.39.3",
     "hono": "^4.6.20",
     "zod": "^3.24.2"
