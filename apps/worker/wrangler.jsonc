@@ -22,9 +22,6 @@
           "id": "id-dev-kv-skedd-chats"
         }
       ],
-      "ai": {
-        "binding": "AI"
-      },
     },
     // CF's vitest integration isolates storage per-test by default.
     // i.e. fresh storage per test-runner session, and any changes made by one test

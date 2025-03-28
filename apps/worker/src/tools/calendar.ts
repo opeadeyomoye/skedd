@@ -1,4 +1,5 @@
-import { auth, calendar_v3 } from '@googleapis/calendar'
+import { calendar_v3 } from '@googleapis/calendar'
+import { tool } from 'ai'
 import { z } from 'zod'
 
 interface CalendarListEntry {
@@ -22,228 +23,95 @@ interface CalendarEventAttendee {
 
 // Define Zod schemas for validation
 const ListEventsArgumentsSchema = z.object({
-  calendarId: z.string(),
-  timeMin: z.string().optional(),
-  timeMax: z.string().optional(),
+  calendarId: z.string()
+    .describe('ID of the calendar to list events from. Defaults to "primary".')
+    .default('primary'),
+  timeMin: z.string()
+    .describe('Start time in ISO format')
+    .optional(),
+  timeMax: z.string()
+    .describe('End time in ISO format')
+    .optional(),
 })
 
 const CreateEventArgumentsSchema = z.object({
-  calendarId: z.string(),
-  summary: z.string(),
-  description: z.string().optional(),
-  start: z.string(),
-  end: z.string(),
+  calendarId: z.string()
+    .describe('ID of the calendar to create event in')
+    .default('primary'),
+  summary: z.string()
+    .describe('Title of the event'),
+  description: z.string()
+    .describe('Description of the event')
+    .optional(),
+  start: z.string()
+    .describe('Start time in ISO format'),
+  end: z.string()
+    .describe('End time in ISO format'),
   attendees: z.array(z.object({
     email: z.string()
-  })).optional(),
-  location: z.string().optional(),
+      .describe('Email address of the attendee')
+  }))
+    .describe('List of attendees')
+    .optional(),
+  location: z.string()
+    .describe('Location of the event')
+    .optional(),
 })
 
 const UpdateEventArgumentsSchema = z.object({
-  calendarId: z.string(),
-  eventId: z.string(),
-  summary: z.string().optional(),
-  description: z.string().optional(),
-  start: z.string().optional(),
-  end: z.string().optional(),
+  calendarId: z.string()
+    .describe('ID of the calendar containing the event')
+    .default('primary'),
+  eventId: z.string()
+    .describe('ID of the event to update'),
+  summary: z.string()
+    .describe('New title of the event')
+    .optional(),
+  description: z.string()
+    .describe('New description of the event')
+    .optional(),
+  start: z.string()
+    .describe('New start time in ISO format')
+    .optional(),
+  end: z.string()
+    .describe('New end time in ISO format')
+    .optional(),
   attendees: z.array(z.object({
     email: z.string()
-  })).optional(),
-  location: z.string().optional(),
+      .describe('Email address of the attendee')
+  }))
+    .describe('List of attendees')
+    .optional(),
+  location: z.string()
+    .describe('New location of the event')
+    .optional(),
 })
 
 const DeleteEventArgumentsSchema = z.object({
-  calendarId: z.string(),
-  eventId: z.string(),
+  calendarId: z.string()
+    .describe('ID of the calendar containing the event')
+    .default('primary'),
+  eventId: z.string()
+    .describe('ID of the event to delete'),
 })
 
-const prefix = 'calendar.google'
 
-export const toolNamePrefix = prefix
-export const toolDefinitions = {
-  [`${prefix}.list-calendars`]: {
-    name: `${prefix}.list-calendars`,
-    description: 'List all available calendars',
-    parameters: {
-      type: 'object',
-      properties: {},
-      required: [],
-    },
-  },
-  [`${prefix}.list-events`]: {
-    name: `${prefix}.list-events`,
-    description: 'List events from a calendar',
-    parameters: {
-      type: 'object',
-      properties: {
-        calendarId: {
-          type: 'string',
-          description: 'ID of the calendar to list events from',
-        },
-        timeMin: {
-          type: 'string',
-          description: 'Start time in ISO format',
-        },
-        timeMax: {
-          type: 'string',
-          description: 'End time in ISO format',
-        },
-      },
-      required: ['calendarId', 'timeMin', 'timeMax'],
-    },
-  },
-  [`${prefix}.create-event`]: {
-    name: `${prefix}.create-event`,
-    description: 'Create a new calendar event',
-    parameters: {
-      type: 'object',
-      properties: {
-        calendarId: {
-          type: 'string',
-          description: 'ID of the calendar to create event in',
-        },
-        summary: {
-          type: 'string',
-          description: 'Title of the event',
-        },
-        description: {
-          type: 'string',
-          description: 'Description of the event',
-        },
-        start: {
-          type: 'string',
-          description: 'Start time in ISO format',
-        },
-        end: {
-          type: 'string',
-          description: 'End time in ISO format',
-        },
-        location: {
-          type: 'string',
-          description: 'Location of the event',
-        },
-        attendees: {
-          type: 'array',
-          description: 'List of attendees',
-          items: {
-            type: 'object',
-            properties: {
-              email: {
-                type: 'string',
-                description: 'Email address of the attendee'
-              }
-            },
-            required: ['email']
-          }
-        }
-      },
-      required: ['calendarId', 'summary', 'start', 'end'],
-    },
-  },
-  [`${prefix}.update-event`]: {
-    name: `${prefix}.update-event`,
-    description: 'Update an existing calendar event. Useful for rescheduling calendar events or changing some of their details.',
-    parameters: {
-      type: 'object',
-      properties: {
-        calendarId: {
-          type: 'string',
-          description: 'ID of the calendar containing the event',
-        },
-        eventId: {
-          type: 'string',
-          description: 'ID of the event to update',
-        },
-        summary: {
-          type: 'string',
-          description: 'New title of the event',
-        },
-        description: {
-          type: 'string',
-          description: 'New description of the event',
-        },
-        start: {
-          type: 'string',
-          description: 'New start time in ISO format',
-        },
-        end: {
-          type: 'string',
-          description: 'New end time in ISO format',
-        },
-        location: {
-          type: 'string',
-          description: 'New location of the event',
-        },
-        attendees: {
-          type: 'array',
-          description: 'List of attendees',
-          items: {
-            type: 'object',
-            properties: {
-              email: {
-                type: 'string',
-                description: 'Email address of the attendee'
-              }
-            },
-            required: ['email']
-          }
-        }
-      },
-      required: ['calendarId', 'eventId'],
-    },
-  },
-  [`${prefix}.delete-event`]: {
-    name: `${prefix}.delete-event`,
-    description: 'Delete a calendar event',
-    parameters: {
-      type: 'object',
-      properties: {
-        calendarId: {
-          type: 'string',
-          description: 'ID of the calendar containing the event',
-        },
-        eventId: {
-          type: 'string',
-          description: 'ID of the event to delete',
-        },
-      },
-      required: ['calendarId', 'eventId'],
-    },
-  },
-} as const
-
-
-export async function callTool<T extends ToolName>(
-  accessToken: string,
-  name: T,
-  args: ToolArguments<T>
-) {
+export function getToolDefinitions(accessToken: string) {
   const calendar = new calendar_v3.Calendar({
     headers: {
       Authorization: `Bearer ${accessToken}`
     },
   })
 
-  try {
-    switch (name) {
-      case 'calendar.google.list-calendars': {
-        const response = await calendar.calendarList.list()
-        const calendars = response.data.items || []
-        return {
-          content: [{
-            type: 'text',
-            text: calendars.map((cal: CalendarListEntry) =>
-              `${cal.summary || 'Untitled'} (calendar-id: ${cal.id || 'no-id'})`).join('\n')
-          }]
-        }
-      }
-
-      case 'calendar.google.list-events': {
-        const validArgs = ListEventsArgumentsSchema.parse(args)
+  return {
+    list_events: tool({
+      parameters: ListEventsArgumentsSchema,
+      description: 'List events from the user\'s calendar',
+      execute: async (args) => {
         const response = await calendar.events.list({
-          calendarId: validArgs.calendarId,
-          timeMin: validArgs.timeMin,
-          timeMax: validArgs.timeMax,
+          calendarId: args.calendarId,
+          timeMin: args.timeMin,
+          timeMax: args.timeMax,
           singleEvents: true,
           orderBy: 'startTime',
         })
@@ -271,18 +139,20 @@ export async function callTool<T extends ToolName>(
           }]
         }
       }
-
-      case 'calendar.google.create-event': {
-        const validArgs = CreateEventArgumentsSchema.parse(args)
+    }),
+    create_event: tool({
+      parameters: CreateEventArgumentsSchema,
+      description: 'Create a new calendar event for the user',
+      execute: async (args) => {
         const event = await calendar.events.insert({
-          calendarId: validArgs.calendarId,
+          calendarId: args.calendarId,
           requestBody: {
-            summary: validArgs.summary,
-            description: validArgs.description,
-            start: { dateTime: validArgs.start },
-            end: { dateTime: validArgs.end },
-            attendees: validArgs.attendees,
-            location: validArgs.location,
+            summary: args.summary,
+            description: args.description,
+            start: { dateTime: args.start },
+            end: { dateTime: args.end },
+            attendees: args.attendees,
+            location: args.location,
           },
         }).then(response => response.data)
 
@@ -293,19 +163,21 @@ export async function callTool<T extends ToolName>(
           }]
         }
       }
-
-      case 'calendar.google.update-event': {
-        const validArgs = UpdateEventArgumentsSchema.parse(args)
+    }),
+    update_event: tool({
+      parameters: UpdateEventArgumentsSchema,
+      description: 'Update an existing calendar event for the user',
+      execute: async (args) => {
         const event = await calendar.events.patch({
-          calendarId: validArgs.calendarId,
-          eventId: validArgs.eventId,
+          calendarId: args.calendarId,
+          eventId: args.eventId,
           requestBody: {
-            summary: validArgs.summary,
-            description: validArgs.description,
-            start: validArgs.start ? { dateTime: validArgs.start } : undefined,
-            end: validArgs.end ? { dateTime: validArgs.end } : undefined,
-            attendees: validArgs.attendees,
-            location: validArgs.location,
+            summary: args.summary,
+            description: args.description,
+            start: args.start ? { dateTime: args.start } : undefined,
+            end: args.end ? { dateTime: args.end } : undefined,
+            attendees: args.attendees,
+            location: args.location,
           },
         }).then(response => response.data)
 
@@ -316,12 +188,14 @@ export async function callTool<T extends ToolName>(
           }]
         }
       }
-
-      case 'calendar.google.delete-event': {
-        const validArgs = DeleteEventArgumentsSchema.parse(args)
+    }),
+    delete_event: tool({
+      parameters: DeleteEventArgumentsSchema,
+      description: 'Delete a calendar event',
+      execute: async (args) => {
         await calendar.events.delete({
-          calendarId: validArgs.calendarId,
-          eventId: validArgs.eventId,
+          calendarId: args.calendarId,
+          eventId: args.eventId,
         })
 
         return {
@@ -331,25 +205,6 @@ export async function callTool<T extends ToolName>(
           }]
         }
       }
-
-      default:
-        throw new Error(`Unknown tool: ${name}`)
-    }
-  } catch (error) {
-    console.error('Error processing request:', error)
-    throw error
+    }),
   }
 }
-
-type ToolDefinitions = typeof toolDefinitions
-export type ToolName = keyof ToolDefinitions
-export type ToolArguments<T extends ToolName> = RequiredToolArguments<T> & OptionalToolArguments<T>
-type RequiredToolArguments<T extends ToolName> = {
-  [K in ToolDefinitions[T]['parameters']['required'][number]]: unknown
-}
-type OptionalToolArguments<T extends ToolName> = Omit<
-  {
-    -readonly[K in keyof ToolDefinitions[T]['parameters']['properties']]?: unknown
-  },
-  keyof RequiredToolArguments<T>
->
