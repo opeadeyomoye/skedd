@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "worker-main",
+  "name": "skedd-worker-main",
   "main": "src/index.ts",
   "compatibility_date": "2025-02-12",
   "compatibility_flags": [
@@ -52,9 +52,9 @@
           "id": "b1218dcfa0634912a16514e23fdf702f"
         }
       ],
-      "ai": {
-        "binding": "AI"
-      },
+      // "ai": {
+      //   "binding": "AI"
+      // },
     },
   },
   // "kv_namespaces": [
