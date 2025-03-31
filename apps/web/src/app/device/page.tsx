@@ -6,6 +6,8 @@ import apiFetch from '@/apiFetch'
 
 const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
 
+export const runtime = 'edge'
+
 export default async function MyDevicePage() {
   const token = await (await auth()).getToken()
   if (!token) return
