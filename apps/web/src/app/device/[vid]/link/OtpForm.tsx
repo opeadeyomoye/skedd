@@ -24,7 +24,7 @@ export default function OtpForm({ vid }: Props) {
     setError('')
 
     try {
-      const res = await (await api).post(`/whatsapp-verifications/${vid}`, {
+      const res = await api.post(`/whatsapp-verifications/${vid}`, {
         body: JSON.stringify({ code: value })
       })
       if (res.ok) {
