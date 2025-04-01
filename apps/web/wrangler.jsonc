@@ -12,6 +12,12 @@
     "enabled": true,
     "head_sampling_rate": 1
   },
+  "routes": [
+    {
+      "pattern": "skedd.xyz",
+      "custom_domain": true
+    }
+  ],
   "kv_namespaces": [
     // Create a KV binding with the binding name "NEXT_INC_CACHE_KV"
     // to enable the KV based caching:
