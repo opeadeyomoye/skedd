@@ -8,8 +8,6 @@ import apiFetch from '@/apiFetch'
 
 const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
 
-export const runtime = 'edge'
-
 export default async function LinkPage({ params }: { params: Promise<{ vid: string }> }) {
   /**
    * use user auth to fetch verification details
