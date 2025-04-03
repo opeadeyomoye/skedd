@@ -42,6 +42,7 @@
       ],
     },
     "production": {
+      "workers_dev": false,
       "d1_databases": [
         {
           "binding": "DB",
