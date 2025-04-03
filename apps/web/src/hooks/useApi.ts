@@ -1,14 +1,11 @@
 import { useAuth } from '@clerk/nextjs'
-import { use } from 'react'
-import apiFetch from '@/apiFetch'
+import apiFetch, { type BearerTokenType } from '@/apiFetch'
 
-export default function useApi() {
+export default function useApi(token?: BearerTokenType) {
   const { getToken } = useAuth()
-  try {
-    const token = use(getToken())
-    return token ? apiFetch(token) : apiFetch()
+  if (token) {
+    return apiFetch(token)
   }
-  catch {
-    return apiFetch()
-  }
+
+  return apiFetch(getToken)
 }

@@ -13,6 +13,7 @@ import useApi from '@/hooks/useApi'
 
 type Props = {
   vid: string
+  token: string
 }
 
 export default function OtpForm({ vid }: Props) {
@@ -25,7 +26,7 @@ export default function OtpForm({ vid }: Props) {
 
     try {
       const res = await api.post(`/whatsapp-verifications/${vid}`, {
-        body: JSON.stringify({ code: value })
+        body: JSON.stringify({ code: value }),
       })
       if (res.ok) {
         return router.push('/device?c=true')

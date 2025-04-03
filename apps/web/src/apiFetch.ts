@@ -1,9 +1,11 @@
 
 const apiRoot = process.env.NEXT_PUBLIC_API_ROOT
 
-export default function (bearerToken?: string, $fetchFn = fetch) {
+export type BearerTokenType = undefined | string | (() => Promise<string | null>)
+
+export default function apiFetch(bearerToken?: BearerTokenType, $fetchFn = fetch) {
   return {
-    fetch(input: RequestInfo | URL, init?: RequestInit) {
+    async fetch(input: RequestInfo | URL, init?: RequestInit) {
       if (
         typeof input === 'string' &&
         !input.startsWith('http://') &&
@@ -18,6 +20,9 @@ export default function (bearerToken?: string, $fetchFn = fetch) {
         'Content-Type': `application/json`
       }
       if (bearerToken) {
+        if (typeof bearerToken === 'function') {
+          bearerToken = String(await bearerToken())
+        }
         init.headers = {
           ...init.headers,
           Authorization: `Bearer ${bearerToken}`

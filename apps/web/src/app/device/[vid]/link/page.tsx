@@ -43,7 +43,7 @@ export default async function LinkPage({ params }: { params: Promise<{ vid: stri
           *********{phoneMask}.
         </Text>
 
-        <OtpForm vid={vid} />
+        <OtpForm vid={vid} token={token} />
       </div>
     </div>
   </>

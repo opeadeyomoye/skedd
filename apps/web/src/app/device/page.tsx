@@ -1,3 +1,4 @@
+import { ClerkProvider } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
 import { Divider } from '@/components/divider'
 import { Heading } from '@/components/heading'
@@ -17,7 +18,7 @@ export default async function MyDevicePage() {
   }
 
   return (
-    <>
+    <ClerkProvider dynamic>
       <Heading>My Device</Heading>
       <Divider className="mt-6" />
 
@@ -46,6 +47,6 @@ export default async function MyDevicePage() {
           </p>
         </div>
       )}
-    </>
+    </ClerkProvider>
   )
 }
