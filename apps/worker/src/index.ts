@@ -1,6 +1,7 @@
 import { clerkMiddleware } from '@hono/clerk-auth'
 import { drizzle } from 'drizzle-orm/d1'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { Buffer } from 'node:buffer'
 import { timingSafeEqual } from 'node:crypto'
 import { z } from 'zod'
@@ -50,6 +51,10 @@ app.use(async (c, next) => {
 app.use('/meta/hub', signatureVerification, loadWhatsAppUser)
 app.post('/meta/hub', whatsAppWebhooksHandlers.onMessage)
 
+app.use(cors({
+  origin: ['https://skedd.xyz'],
+  allowMethods: ['GET', 'POST', 'PUT'],
+}))
 app.use(clerkMiddleware(), requireClerkAuth)
 app.get(
   '/whatsapp-verifications/:id',
