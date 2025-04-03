@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-const isAllAccessRoute = createRouteMatcher(['/'])
+const isAllAccessRoute = createRouteMatcher(['/', '/privacy'])
 const isGuestOnlyRoute = createRouteMatcher([])
 
 export default clerkMiddleware(async (auth, req) => {
