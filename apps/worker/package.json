@@ -6,7 +6,7 @@
     "test": "rm -rf ./.tmp/drizzle; pnpm generate:test; vitest",
     "generate": "drizzle-kit generate",
     "generate:test": "drizzle-kit generate --name=test_db --config=drizzle-test.config.ts",
-    "migrate": "wrangler d1 migrations apply skedd-db",
+    "migrate": "wrangler d1 migrations apply skedd-db -e production",
     "migrate:dev": "wrangler d1 migrations apply dev-skedd-db --local -e dev"
   },
   "dependencies": {
