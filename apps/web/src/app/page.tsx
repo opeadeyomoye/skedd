@@ -13,6 +13,7 @@ import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
 import Link from 'next/link'
+import { TouchTarget } from '@/components/button'
 
 const navigation = [
   { name: ' ', href: '#' },
@@ -143,21 +144,22 @@ export default function Page() {
         <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:flex lg:items-center lg:gap-x-10 lg:px-8 lg:py-40">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:flex-auto">
             <h1 className="mt-10 text-5xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-gray-50 sm:text-7xl">
-              Talk to your Calendar
+              Talk to your Calendar on WhatsApp
             </h1>
             <p className="mt-8 text-lg font-medium text-pretty text-gray-500 dark:text-gray-300 sm:text-xl/8">
-              Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
-              fugiat veniam occaecat fugiat aliqua.
+              Manage your Google Calendar via chat. (Re)Schedule meetings, check availability, and more, right there on WhatsApp. It's free!
             </p>
             <div className="mt-10 flex items-center gap-x-6">
               <SignedOut>
-                <SignUpButton>
-                  <span
-                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs cursor-default hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Get started
-                  </span>
-                </SignUpButton>
+                <TouchTarget>
+                  <SignUpButton>
+                    <span
+                      className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs cursor-default hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Get started
+                    </span>
+                  </SignUpButton>
+                </TouchTarget>
               </SignedOut>
               <SignedIn>
                 <Link
