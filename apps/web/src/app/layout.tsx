@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'skedd ai',
   description: 'Talk to your Google Calendar on WhatsApp',
+  icons: [
+    { url: '/skedd-icon.png', sizes: '192x192' },
+  ]
 }
 
 export default function RootLayout({
