@@ -51,7 +51,7 @@ export default function Page() {
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <SignedOut>
-              <SignInButton>
+              <SignInButton forceRedirectUrl={'/device'}>
                 <span className="text-sm/6 font-semibold text-gray-900 cursor-pointer dark:text-gray-50">
                   Log in <span aria-hidden="true">&rarr;</span>
                 </span>
@@ -145,12 +145,12 @@ export default function Page() {
               Talk to your Calendar on WhatsApp
             </h1>
             <p className="mt-8 text-lg font-medium text-pretty text-gray-500 dark:text-gray-300 sm:text-xl/8">
-              Manage your Google Calendar via chat. (Re)Schedule meetings, check availability, and more, right there on WhatsApp. It's free!
+              Manage your Google Calendar via chat. (Re)Schedule meetings, check availability, and more, right there on WhatsApp. It&apos;s free!
             </p>
             <div className="mt-10 flex items-center gap-x-6">
               <SignedOut>
                 <TouchTarget>
-                  <SignUpButton>
+                  <SignUpButton forceRedirectUrl={'/device'}>
                     <span
                       className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs cursor-default hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
