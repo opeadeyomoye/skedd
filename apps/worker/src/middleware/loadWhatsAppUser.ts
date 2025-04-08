@@ -3,7 +3,7 @@ import { messages, Payloads } from '../wa'
 import { randomString } from '../util/string'
 
 const linkNumberMsg = (id: string, code: string) => `
-Thank you trying out skedd! 🥳
+Thank you for trying out skedd! 🥳
 
 To get started, please go to the following url and enter the code *${code}* to link this number with your Google (Calendar) account:
 

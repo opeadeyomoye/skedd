@@ -1,5 +1,6 @@
 'use client'
 
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ExclamationTriangleIcon } from '@heroicons/react/20/solid'
@@ -45,10 +46,12 @@ export default function OtpForm({ vid }: Props) {
     <form onSubmit={onSubmit} method="post" className="mt-10">
       <div className="">
         <InputOTP
+          type="text"
           maxLength={6}
           value={value}
           onChange={(value) => setValue(value.trim().toUpperCase())}
           required={true}
+          pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
         >
           <InputOTPGroup>
             <InputOTPSlot index={0} className="h-12 w-12 border-y-2 border-r-2 border-zinc-600 text-2xl first:border-l-2" />
