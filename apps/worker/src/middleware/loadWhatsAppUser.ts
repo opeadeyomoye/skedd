@@ -22,7 +22,7 @@ export default createMiddleware<AppEnv>(async (ctx, next) => {
    *
    *  - meanwhile, return a 200 so meta is happy
    */
-  const json = await ctx.req.raw.clone().json<Payloads.TextMessage>()
+  const json = await ctx.req.raw.clone().json<Payloads.Event>()
 
   const messageList = json.entry[0].changes[0].value.messages
   if (!messageList?.length) {
