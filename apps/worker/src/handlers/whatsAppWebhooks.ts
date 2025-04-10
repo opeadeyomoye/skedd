@@ -39,10 +39,9 @@ export async function onMessage(ctx: Context<AppEnv>) {
   const conversation = await ctx.env.KV_SKEDD_CHATS.get<StoredConversation>(
     convoKey, 'json'
   ) ?? { context: [] }
-  conversation.context.push(userMsg)
 
   const messages: CoreMessage[] = []
-  messages.push(...conversation.context)
+  messages.push(...conversation.context, userMsg)
 
   const clerkClient = createClerkClient({
     secretKey: ctx.env.CLERK_SECRET_KEY,
@@ -63,6 +62,9 @@ It's currently ${(new Date()).toString()}.
     messages,
   })
 
+  if (waMessage.type === 'text') {
+    conversation.context.push(userMsg)
+  }
   conversation.context.push(...result.response.messages)
   ctx.env.KV_SKEDD_CHATS.put(convoKey, JSON.stringify(conversation))
 
@@ -75,13 +77,51 @@ async function createLLMMessage(
   msg: WA.Payloads.Message,
   waApi: WA.Api
 ): Promise<CoreMessage> {
-
   if (msg.type === 'text') {
     return { role: 'user', content: msg.text.body }
   }
 
   if (msg.type === 'audio') {
-    // get media if no more than 1mb
+    const supportedMimeTypes = [
+      'audio/wav',
+      'audio/mp3',
+      'audio/aiff',
+      'audio/aac',
+      'audio/ogg',
+      'audio/flac'
+    ]
+    const validMime = supportedMimeTypes.find(
+      type => msg.audio.mime_type.startsWith(type)
+    )
+    if (!validMime) {
+      throw new Error('Unsupported audio type')
+    }
+    const media = await waApi.getMediaUrl(msg.audio.id)
+    if (!media) {
+      throw new Error('Audio not found')
+    }
+    if (Number(media?.file_size) > 750 * 1024) {
+      throw new Error('Audio too large')
+    }
+    const audio = await waApi.downloadMedia(media.url)
+    if (!audio.ok) {
+      throw new Error('Audio failed to load')
+    }
+
+    return({
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: 'Describe the prompt in this voice recording. Then help me with it.',
+        },
+        {
+          type: 'file',
+          mimeType: validMime,
+          data: Buffer.from(await audio.arrayBuffer()),
+        },
+      ]
+    })
   }
 
   if (msg.type === 'image') {
