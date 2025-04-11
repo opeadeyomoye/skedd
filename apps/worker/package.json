@@ -22,7 +22,7 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.6.16",
     "@cloudflare/workers-types": "^4.20250224.0",
-    "@faker-js/faker": "^9.5.0",
+    "@faker-js/faker": "^9.6.0",
     "@types/node": "^22.13.4",
     "drizzle-kit": "^0.30.4",
     "drizzle-seed": "^0.3.1",

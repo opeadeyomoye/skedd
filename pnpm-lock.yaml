@@ -116,8 +116,8 @@ importers:
         specifier: ^4.20250224.0
         version: 4.20250224.0
       '@faker-js/faker':
-        specifier: ^9.5.0
-        version: 9.5.0
+        specifier: ^9.6.0
+        version: 9.6.0
       '@types/node':
         specifier: ^22.13.4
         version: 22.13.4
@@ -272,8 +272,8 @@ packages:
     resolution: {integrity: sha512-kISKhqN1k48TaMPbLgq9jj7mO2jvbJdhirvfu4JW3jhFhENnkY0oCwTPvR4Q6Ne2as6GFAMo2XZDZq4rxC7YDw==}
     engines: {node: '>=14.0.0'}
 
-  '@aws-sdk/client-dynamodb@3.787.0':
-    resolution: {integrity: sha512-mqR+MrO/Jef9fHU0QH4jDW5zJ3RtHUnyt6OVwO0ezQD5hWajIwT8fl2Bp0zqakhkhUAiW7FpGAiF+G+kEqb/rQ==}
+  '@aws-sdk/client-dynamodb@3.788.0':
+    resolution: {integrity: sha512-agm2+5p47uDbAcWRJjRqsIIpbjig5P0AMB/1lQjkQKTnGOfdgzIrFLtQ3tO0kWWbTb7gH6Pg5EviuTC8j6axLQ==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/client-lambda@3.787.0':
@@ -1581,10 +1581,9 @@ packages:
     resolution: {integrity: sha512-+0TjwR1eAUdZtvv/ir1mGX+v0tUoR3VEPB8Up0LLJC+whRW0GgBBtpbOkg/a/U4Dxa6l5a3l9AJ1aWIQVyoWJA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@faker-js/faker@9.5.0':
-    resolution: {integrity: sha512-3qbjLv+fzuuCg3umxc9/7YjrEXNaKwHgmig949nfyaTx8eL4FAsvFbu+1JcFUj1YAXofhaDn6JdEUBTYuk0Ssw==}
+  '@faker-js/faker@9.6.0':
+    resolution: {integrity: sha512-3vm4by+B5lvsFPSyep3ELWmZfE3kicDtmemVpuwl1yH7tqtnHdsA6hG8fbXedMVdkzgtvzWoRgjSB4Q+FHnZiw==}
     engines: {node: '>=18.0.0', npm: '>=9.0.0'}
-    deprecated: Please update to a newer version
 
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
@@ -5146,7 +5145,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-dynamodb@3.787.0':
+  '@aws-sdk/client-dynamodb@3.788.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
@@ -6644,7 +6643,7 @@ snapshots:
       '@eslint/core': 0.11.0
       levn: 0.4.1
 
-  '@faker-js/faker@9.5.0': {}
+  '@faker-js/faker@9.6.0': {}
 
   '@fastify/busboy@2.1.1': {}
 
@@ -6893,7 +6892,7 @@ snapshots:
     dependencies:
       '@ast-grep/napi': 0.35.0
       '@aws-sdk/client-cloudfront': 3.398.0
-      '@aws-sdk/client-dynamodb': 3.787.0
+      '@aws-sdk/client-dynamodb': 3.788.0
       '@aws-sdk/client-lambda': 3.787.0
       '@aws-sdk/client-s3': 3.787.0
       '@aws-sdk/client-sqs': 3.787.0

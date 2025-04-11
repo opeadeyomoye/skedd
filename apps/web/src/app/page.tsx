@@ -191,7 +191,7 @@ export default function Page() {
                 clipPath="url(#2ade4387-9c63-4fc4-b754-10e687a0d332)"
                 transform="translate(24 24)"
               >
-                <img alt="" src="https://tailwindui.com/plus-assets/img/component-images/mobile-app-screenshot.png" />
+                <img alt="" src="/skedd-whatsapp-screenshot.png" />
               </foreignObject>
             </svg>
           </div>
