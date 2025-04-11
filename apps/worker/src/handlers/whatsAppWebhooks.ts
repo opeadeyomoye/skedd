@@ -108,7 +108,7 @@ async function createLLMMessage(
       throw new Error('Audio failed to load')
     }
 
-    return({
+    return {
       role: 'user',
       content: [
         {
@@ -121,11 +121,49 @@ async function createLLMMessage(
           data: Buffer.from(await audio.arrayBuffer()),
         },
       ]
-    })
+    }
   }
 
-  if (msg.type === 'image') {
-    //
+  if (msg.type === 'image' && msg.image.caption) {
+    const supportedMimeTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/heic',
+      'image/heif',
+    ]
+    const validMime = supportedMimeTypes.find(
+      type => msg.image.mime_type.startsWith(type)
+    )
+    if (!validMime) {
+      throw new Error('Unsupported image type')
+    }
+    const media = await waApi.getMediaUrl(msg.image.id)
+    if (!media) {
+      throw new Error('Image not found')
+    }
+    if (Number(media?.file_size) > 750 * 1024) {
+      throw new Error('Image too large')
+    }
+    const audio = await waApi.downloadMedia(media.url)
+    if (!audio.ok) {
+      throw new Error('Image failed to load')
+    }
+
+    return {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: msg.image.caption,
+        },
+        {
+          type: 'file',
+          mimeType: validMime,
+          data: Buffer.from(await audio.arrayBuffer()),
+        },
+      ]
+    }
   }
 
   throw new Error('Unsupported message type')

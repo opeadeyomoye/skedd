@@ -140,7 +140,7 @@ export namespace Payloads {
     | {
       image: {
         id: string
-        caption: string
+        caption?: string
         mime_type: string
         sha_256: string
       }
