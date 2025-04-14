@@ -149,15 +149,13 @@ export default function Page() {
             </p>
             <div className="mt-10 flex items-center gap-x-6">
               <SignedOut>
-                <TouchTarget>
-                  <SignUpButton forceRedirectUrl={'/device'}>
-                    <span
-                      className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs cursor-default hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                      Get started
-                    </span>
-                  </SignUpButton>
-                </TouchTarget>
+                <SignUpButton forceRedirectUrl={'/device'}>
+                  <span
+                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs cursor-default hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Get started
+                  </span>
+                </SignUpButton>
               </SignedOut>
               <SignedIn>
                 <Link
