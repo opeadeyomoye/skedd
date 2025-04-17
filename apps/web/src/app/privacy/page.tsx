@@ -28,6 +28,11 @@ export default function PrivacyPolicyPage() {
         <li><Text>To Personalize Your Experience</Text></li>
         <li><Text>To Communicate with You</Text></li>
         <li><Text>To Provide Core Functionality</Text></li>
+        <li>
+          <Text>
+            We explicitly do not use your data to train any artificial intelligence or machine learning models.
+          </Text>
+        </li>
       </ul>
 
       <Heading level={2} className="mt-8 text-xl">3. Data Security</Heading>
